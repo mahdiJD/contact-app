@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Contact;
 use Illuminate\Pagination\LengthAwarePaginator;
 use \Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use function Laravel\Prompts\search;
 
 
 class ContactController extends Controller
@@ -29,13 +31,24 @@ class ContactController extends Controller
     public function index() {
 //        $contacts = $this->getContact();
         $companies = $this->companies->pluck();
-        $this->perPage = request()->query('perPage');
+//        $this->perPage = request()->query('perPage');
+
+
+//        DB::enableQueryLog();
         $contacts = Contact::latest()
             ->where(function ($query) {
                 if ($companyId = request()->query('company_id')) {
                     $query->where('company_id', $companyId);
                 }
-            })->paginate($this->perPage);
+            })->where(function ($query){
+                if ($search = request()->query('search')){
+                    $query->where('first_name','LIKE',"%{$search}%");
+                    $query->orwhere('last_name','LIKE',"%{$search}%");
+                    $query->orwhere('email','LIKE',"%{$search}%");
+                }
+            })
+            ->paginate($this->perPage);
+//        dump(DB::getQueryLog());
 
 //        $contactsCollection = Contact::latest()->get();
 //        $perPage = 10;
