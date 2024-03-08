@@ -61,11 +61,12 @@
                     <div class="form-group row mb-0">
                       <div class="col-md-9 offset-md-3">
                           <a href="{{route('contact.edit',$contact->id)}}" class="btn btn-info">Edit</a>
-                          <form action="{{route('contact.destroy',$contact->id)}}" method="POST" onsubmit="return confirm('Are you sure?')" style="display: inline">
+                          <form action="{{route('contact.destroy',$contact->id)}}" method="POST"
+                                onsubmit="askForTrash(event)" style="display: inline">
                               @csrf
                               @method('DELETE')
 
-                              <button class="btn btn-outline-danger" title="Delete" >Delete</button>
+                              <button class="btn btn-outline-danger" title="Trash" >Move To Trash</button>
                           </form>
 
                           <a href="{{ route('contact.index') }}" class="btn btn-outline-secondary">Cancel</a>

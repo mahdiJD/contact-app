@@ -61,12 +61,12 @@
 @endif
 
 <script>
-    function ask(e){
+    function askForTrash(e){
         e.preventDefault();
         let form = e.currentTarget;
         swal({
             title:"Are you sure?",
-            text: "Once deleted, you will not be able to recover this contact information!",
+            text: "Once deleted, you will be move to trash!",
             icon:"warning",
             buttons:true,
             dangerMode:true,
