@@ -59,5 +59,26 @@
         swal("Creat successfully","{{$message}}","success")
     </script>
 @endif
+
+<script>
+    function ask(e){
+        e.preventDefault();
+        let form = e.currentTarget;
+        swal({
+            title:"Are you sure?",
+            text: "Once deleted, you will not be able to recover this contact information!",
+            icon:"warning",
+            buttons:true,
+            dangerMode:true,
+        })
+            .then((willDelete)=>{
+                if (willDelete) {
+                    form.submit();
+                }else {
+                    swal("The Operation has been canceled!");
+                }
+            });
+    }
+</script>
 </body>
 </html>

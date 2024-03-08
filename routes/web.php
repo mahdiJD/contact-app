@@ -78,4 +78,6 @@ Route::controller(ContactController::class)->prefix('admin')->group(function () 
     Route::get('/contact/{id?}/edit','edit')->name('contact.edit');
 
     Route::put('/contact/{id?}','update')->name('contact.update');
+
+    Route::delete('/contact/{id?}','destroy')->name('contact.destroy');
 });

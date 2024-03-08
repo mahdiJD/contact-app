@@ -6,6 +6,7 @@ use App\Repositories\CompanyRepository;
 use Illuminate\Http\Request;
 use App\Models\Contact;
 use Illuminate\Pagination\LengthAwarePaginator;
+use \Illuminate\Http\RedirectResponse;
 
 
 class ContactController extends Controller
@@ -61,8 +62,9 @@ class ContactController extends Controller
             'company_id' => 'required|exists:companies,id',
         ]);
 
-        Contact::created($request->all());
+        Contact::create($request->all());
 
+//        dd($request->all());
         return redirect()->route('contact.index')->with('message','Contact has been created successfully');
     }
 
@@ -89,7 +91,8 @@ class ContactController extends Controller
         $companies = $this->companies->pluck();
         return view('contacts.edit')->with('contact',$contact)->with('companies',$companies);
     }
-    public function update(Request $request , $id){
+    public function update(Request $request , $id): RedirectResponse
+    {
         $contact = Contact::findOrFail($id);
         $request->validate([
             'first_name' => 'required|string|max:50',
@@ -103,5 +106,12 @@ class ContactController extends Controller
         $contact->update($request->all());
 
         return redirect()->route('contact.index')->with('message','Contact has been updated successfully');
+    }
+
+    public function destroy($id)
+    {
+        $contact = Contact::findOrFail($id);
+        $contact->delete();
+        return redirect()->route('contact.index')->with('message','Contact has been delete successfully');
     }
 }

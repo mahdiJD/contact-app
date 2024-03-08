@@ -8,6 +8,12 @@
     <td width="150">
         <a href="{{ route('contact.show', ['id'=>$contact->id]) }}" class="btn btn-sm btn-circle btn-outline-info" title="Show"><i class="fa fa-eye"></i></a>
         <a href="{{route('contact.edit',$contact->id)}}" class="btn btn-sm btn-circle btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></a>
-        <a href="#" class="btn btn-sm btn-circle btn-outline-danger" title="Delete" onclick="confirm('Are you sure?')"><i class="fa fa-times"></i></a>
+        <form action="{{route('contact.destroy',$contact->id)}}" method="POST" onsubmit="ask(event)" style="display: inline">
+            @csrf
+            @method('DELETE')
+
+            <button class="btn btn-sm btn-circle btn-outline-danger" title="Delete" ><i class="fa fa-times"></i></button>
+        </form>
+
     </td>
 </tr>
