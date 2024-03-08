@@ -17,4 +17,3 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-database/migrations/2024_03_08_070853_add_softdelete_to_companies.php
