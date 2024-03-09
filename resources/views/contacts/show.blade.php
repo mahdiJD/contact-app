@@ -61,8 +61,9 @@
                     <div class="form-group row mb-0">
                       <div class="col-md-9 offset-md-3">
                           <a href="{{route('contact.edit',$contact->id)}}" class="btn btn-info">Edit</a>
-                          <form action="{{route('contact.destroy',$contact->id)}}" method="POST"
-                                onsubmit="askForTrash(event)" style="display: inline">
+                          <form action="{{route('contact.destroy',['id' => $contact->id , 'redirect' =>'contact.index'])}}"
+                                method="POST"
+                                onsubmit="askForTrash(event , 'your contact will be moved to the trash!')" style="display: inline">
                               @csrf
                               @method('DELETE')
 

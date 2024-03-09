@@ -1,7 +1,16 @@
                 <div class="row">
-                  <div class="col-md-6"></div>
+                  <div class="col-md-6">
+                      <a
+                          href="{{ request()->fullUrlWithQuery(['trash' => false]) }}"
+                         class="btn {{ !request()->query('trash') && request()->query('trash') == 0 ? 'btn-success' :
+                            'btn-secondary'}}">ALL</a> |
+                      <a href="{{ request()->fullUrlWithQuery(['trash' => true]) }}"
+                         class="btn {{request()->query('trash') && request()->query('trash') == 1 ? 'btn-success' :
+                            'btn-secondary'}}  ">Trash</a>
+                  </div>
                   <div class="col-md-6">
                       <form method="GET">
+                          <input type="hidden" name="trash" value="{{ request()->query('trash') }}">
                     <div class="row">
                       <div class="col">
                         @includeUnless(empty($companies) ,'contacts.partials._companies_select', ['companies' => $companies])

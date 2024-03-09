@@ -34,8 +34,12 @@ class ContactController extends Controller
 //        $this->perPage = request()->query('perPage');
 
 
-//        DB::enableQueryLog();
-        $contacts = Contact::latest()
+        DB::enableQueryLog();
+        $query = Contact::query();
+        if ( request()->query('trash')){
+            $query->onlyTrashed();
+        }
+        $contacts = $query->latest()
             ->where(function ($query) {
                 if ($companyId = request()->query('company_id')) {
                     $query->where('company_id', $companyId);
@@ -48,7 +52,8 @@ class ContactController extends Controller
                 }
             })
             ->paginate($this->perPage);
-//        dump(DB::getQueryLog());
+
+        dump(DB::getQueryLog());
 
 //        $contactsCollection = Contact::latest()->get();
 //        $perPage = 10;
@@ -125,18 +130,24 @@ class ContactController extends Controller
     {
         $contact = Contact::findOrFail($id);
         $contact->delete();
-        return redirect()->route('contact.index')
+        $redirect = \request()->query('redirect');
+        return ($redirect ? redirect()->route($redirect):back())
             ->with('message','Contact has been move to the Trash successfully')
-            ->with('undoRoute',route('contact.restore',$contact->id));
+            ->with('undoRoute',$this->getUndoRoute('contact.restore', $contact));
     }
 
     public function restore ($id)
     {
         $contact = Contact::onlyTrashed()->findOrFail($id);
         $contact->restore();
-        return redirect()->route('contact.index')
+        $redirect = \request()->query('redirect');
+        return ($redirect ? redirect()->route($redirect):back())
             ->with('message','Contact has been move to the Trash successfully restored from trash')
-            ->with('undoRoute',route('contact.destroy',$contact->id));
+            ->with('undoRoute',$this->getUndoRoute('contact.destroy', $contact));
+    }
+
+    protected function getUndoRoute($name , $resource){
+        return \request()->missing('undo') ? route($name , [$resource->id , 'undo' => true]):null;
     }
 
     public function forceDelete ($id)
