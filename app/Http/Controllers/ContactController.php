@@ -125,14 +125,25 @@ class ContactController extends Controller
     {
         $contact = Contact::findOrFail($id);
         $contact->delete();
-        return redirect()->route('contact.index')->with('message','Contact has been move to the Trash successfully')
-            ->with('undoRoute');
+        return redirect()->route('contact.index')
+            ->with('message','Contact has been move to the Trash successfully')
+            ->with('undoRoute',route('contact.restore',$contact->id));
     }
 
     public function restore ($id)
     {
         $contact = Contact::onlyTrashed()->findOrFail($id);
         $contact->restore();
-        return redirect()->route('contact.index')->with('message','Contact has been move to the Trash successfully');
+        return redirect()->route('contact.index')
+            ->with('message','Contact has been move to the Trash successfully restored from trash')
+            ->with('undoRoute',route('contact.destroy',$contact->id));
+    }
+
+    public function forceDelete ($id)
+    {
+        $contact = Contact::onlyTrashed()->findOrFail($id);
+        $contact->forceDelete();
+        return back()->route('contact.index')
+            ->with('message','Contact has been remove from DB successfully.');
     }
 }

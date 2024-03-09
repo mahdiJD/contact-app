@@ -80,4 +80,10 @@ Route::controller(ContactController::class)->prefix('admin')->group(function () 
     Route::put('/contact/{id?}','update')->name('contact.update');
 
     Route::delete('/contact/{id?}','destroy')->name('contact.destroy');
+
+    Route::delete('/contact/{id?}','destroy')->name('contact.destroy');
+
+    Route::delete('/contact/{id?}/restore','restore')->name('contact.restore');
+
+    Route::delete('/contact/{id?}/force-delete','forceDelete')->name('contact.force-delete');
 });
