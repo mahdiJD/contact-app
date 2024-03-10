@@ -34,23 +34,22 @@ class ContactController extends Controller
 //        $this->perPage = request()->query('perPage');
 
 
-        DB::enableQueryLog();
-        $query = Contact::query();
-        if ( request()->query('trash')){
-            $query->onlyTrashed();
-        }
-        $contacts = $query->latest()
-            ->where(function ($query) {
-                if ($companyId = request()->query('company_id')) {
-                    $query->where('company_id', $companyId);
-                }
-            })->where(function ($query){
-                if ($search = request()->query('search')){
-                    $query->where('first_name','LIKE',"%{$search}%");
-                    $query->orwhere('last_name','LIKE',"%{$search}%");
-                    $query->orwhere('email','LIKE',"%{$search}%");
-                }
-            })
+//        DB::enableQueryLog();
+//        $query = Contact::query();
+//        if ( request()->query('trash')){
+//            $query->onlyTrashed();
+//            request()->merge([
+//                'page' => 1
+//            ]);
+//        }
+
+//        $contacts = $query->latest()
+        $contacts = Contact::allowedTrash()
+            ->allowedSorts(['first_name','last_name','email'])
+//            ->allowedSorts('first_name')
+//            ->filterByCompany('company_id')
+            ->allowedFilter('company_id')
+            ->allowedSearch('first_name','last_name','email')
             ->paginate($this->perPage);
 
         dump(DB::getQueryLog());

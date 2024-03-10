@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\AllowedFilterSearch;
+use App\Models\Scopes\AllowedSort;
 use App\Models\Scopes\SimpleSoftDeletes;
 use App\Models\Scopes\SimpleSoftDeleteScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent;
 
 class Contact extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes , AllowedSort , AllowedFilterSearch;
 //    use HasFactory , SimpleSoftDeletes;
     protected $fillable = ['first_name','last_name','phone','email','address','company_id'];
 
@@ -22,6 +24,17 @@ class Contact extends Model
     public function tasks(){
         return $this->hasMany(Task::class);
     }
+
+//    public function scopeFilterByCompany(Eloquent\Builder $query , $key)
+//    {
+//        if ($companyId = request()->query($key)) {
+//            $query->where($key, $companyId);
+//        }
+//        return $query;
+//    }
+
+
+
 
 //    public static function booted()
 //    {
