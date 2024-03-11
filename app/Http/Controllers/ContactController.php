@@ -45,7 +45,7 @@ class ContactController extends Controller
 
 //        $contacts = $query->latest()
         $contacts = Contact::allowedTrash()
-            ->allowedSorts(['first_name','last_name','email'])
+            ->allowedSorts(['first_name','last_name','email'] , '-id')
 //            ->allowedSorts('first_name')
 //            ->filterByCompany('company_id')
             ->allowedFilter('company_id')
