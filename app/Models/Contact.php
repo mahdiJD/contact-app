@@ -9,7 +9,8 @@ use App\Models\Scopes\SimpleSoftDeleteScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Str;
 
 class Contact extends Model
 {
@@ -23,6 +24,19 @@ class Contact extends Model
 
     public function tasks(){
         return $this->hasMany(Task::class);
+    }
+
+    protected function email(): Attribute{
+        return Attribute::make(
+            get: fn($value) => Str::upper($value),
+            set: fn($value) => Str::lower($value)
+        );
+    }
+
+    protected function fullName():Attribute{ // for use : $contact->full_name
+        return Attribute::make(
+            get: fn() => "{$this->first_name} {$this->last_name }"
+        );
     }
 
 //    public function scopeFilterByCompany(Eloquent\Builder $query , $key)
