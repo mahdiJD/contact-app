@@ -11,7 +11,7 @@
                 <strong>Edit Contact</strong>
               </div>
               <div class="card-body">
-                  <form action="{{route('contact.update',$contact->id)}}" method="POST">
+                  <form action="{{route('contacts.update',$contact->id)}}" method="POST">
 {{--                      <input type="hidden" name="_token" value="{{csrf_token()}}">--}}
                       @csrf
                       @method('PUT')

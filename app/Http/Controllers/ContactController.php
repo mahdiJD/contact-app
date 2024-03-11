@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ContactRequest;
 use App\Repositories\CompanyRepository;
 use Illuminate\Http\Request;
 use App\Models\Contact;
@@ -56,39 +57,30 @@ class ContactController extends Controller
 
 //        $contactsCollection = Contact::latest()->get();
 //        $perPage = 10;
-//        $currentPage  = \request()->query('page',1);
+//        $currentPage  = request()->query('page',1);
 //        $items = $contactsCollection->slice( ($currentPage * $perPage) - $perPage , $perPage);
 //        $total = $contactsCollection->count();
 //
 //        $contacts = new LengthAwarePaginator($items,$total,$perPage,$currentPage,
 //            [
 //                'path' => request()->url(),
-//                'query' => \request()->query(),
+//                'query' => request()->query(),
 //            ]
 //        );
         return view('contacts.index', ['contacts' => $contacts ,'companies'=>$companies]);// ->with('com');
     }
 
-    public function store(Request $request){
-        $request->validate([
-            'first_name' => 'required|string|max:50',
-            'last_name' => 'required|string|max:50',
-            'email' => 'required|email|max:50',
-            'phone' => 'nullable',
-            'address' => 'nullable',
-            'company_id' => 'required|exists:companies,id',
-        ]);
-
+    public function store(ContactRequest $request){
         Contact::create($request->all());
 
 //        dd($request->all());
-        return redirect()->route('contact.index')->with('message','Contact has been created successfully');
+        return redirect()->route('contacts.index')->with('message','Contact has been created successfully');
     }
 
-    public function show ($id = null) {
+    public function show (Contact $contact) {
 //    if (not($id)) return view('contact.show');
 //        $contacts = $this->getContact();
-        $contact = Contact::findOrFail($id);
+//        $contact = Contact::findOrFail($id);
 //        abort_if(empty($contact) , 404);
         return view('contacts.show',['contact' => $contact]);
     }
@@ -108,52 +100,44 @@ class ContactController extends Controller
         $companies = $this->companies->pluck();
         return view('contacts.edit')->with('contact',$contact)->with('companies',$companies);
     }
-    public function update(Request $request , $id): RedirectResponse
+    public function update(ContactRequest $request , $id): RedirectResponse
     {
         $contact = Contact::findOrFail($id);
-        $request->validate([
-            'first_name' => 'required|string|max:50',
-            'last_name' => 'required|string|max:50',
-            'email' => 'required|email|max:50',
-            'phone' => 'nullable',
-            'address' => 'nullable',
-            'company_id' => 'required|exists:companies,id',
-        ]);
 
         $contact->update($request->all());
 
-        return redirect()->route('contact.index')->with('message','Contact has been updated successfully');
+        return redirect()->route('contacts.index')->with('message','Contact has been updated successfully');
     }
 
     public function destroy($id)
     {
         $contact = Contact::findOrFail($id);
         $contact->delete();
-        $redirect = \request()->query('redirect');
+        $redirect = request()->query('redirect');
         return ($redirect ? redirect()->route($redirect):back())
             ->with('message','Contact has been move to the Trash successfully')
-            ->with('undoRoute',$this->getUndoRoute('contact.restore', $contact));
+            ->with('undoRoute',$this->getUndoRoute('contacts.restore', $contact));
     }
 
-    public function restore ($id)
+    public function restore (Contact $contact)
     {
-        $contact = Contact::onlyTrashed()->findOrFail($id);
+//        $contact = Contact::onlyTrashed()->findOrFail($id);
         $contact->restore();
-        $redirect = \request()->query('redirect');
+        $redirect = request()->query('redirect');
         return ($redirect ? redirect()->route($redirect):back())
             ->with('message','Contact has been move to the Trash successfully restored from trash')
-            ->with('undoRoute',$this->getUndoRoute('contact.destroy', $contact));
+            ->with('undoRoute',$this->getUndoRoute('contacts.destroy', $contact));
     }
 
     protected function getUndoRoute($name , $resource){
-        return \request()->missing('undo') ? route($name , [$resource->id , 'undo' => true]):null;
+        return request()->missing('undo') ? route($name , [$resource->id , 'undo' => true]):null;
     }
 
-    public function forceDelete ($id)
+    public function forceDelete (Contact $contact)
     {
-        $contact = Contact::onlyTrashed()->findOrFail($id);
+//        $contact = Contact::onlyTrashed()->findOrFail($id);
         $contact->forceDelete();
-        return back()->route('contact.index')
+        return back()
             ->with('message','Contact has been remove from DB successfully.');
     }
 }

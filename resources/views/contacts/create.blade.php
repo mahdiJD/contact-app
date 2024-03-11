@@ -11,7 +11,7 @@
                 <strong>Add New Contact</strong>
               </div>
               <div class="card-body">
-                  <form action="{{route('contact.store')}}" method="POST">
+                  <form action="{{route('contacts.store')}}" method="POST">
 {{--                      <input type="hidden" name="_token" value="{{csrf_token()}}">--}}
                       @csrf
                   @include('contacts.partials._form')

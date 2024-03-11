@@ -4,6 +4,9 @@
 use Illuminate\Support\Facades\Route;
 //use App\Http\Controllers\PostController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CompanyControllers;
+use App\Http\Controllers\TagControllers;
+use App\Http\Controllers\ActivityControllers;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,23 +70,36 @@ use App\Http\Controllers\ContactController;
 Route::get('/', [ContactController::class,'welcome']);
 
 Route::controller(ContactController::class)->prefix('admin')->group(function () {
-    Route::get('/contact','index')->name('contact.index');
+    Route::get('/contacts','index')->name('contacts.index');
 
-    Route::get('/contact/create', 'create')->name('contact.create');
+    Route::get('/contacts/create', 'create')->name('contacts.create');
 
-    Route::get('/contact/{id}', 'show' )->whereNumber('id')->name('contact.show');//{id?}
+    Route::get('/contacts/{contact}', 'show' )->whereNumber('id')->name('contacts.show');//{id?}
+//    Route::get('/contacts/{contact:email}','show')->name('contact.show');
 
-    Route::post('/contact/','store')->name('contact.store');
+    Route::post('/contacts/','store')->name('contacts.store');
 
-    Route::get('/contact/{id?}/edit','edit')->name('contact.edit');
+    Route::get('/contacts/{contact?}/edit','edit')->name('contacts.edit');
 
-    Route::put('/contact/{id?}','update')->name('contact.update');
+    Route::put('/contacts/{contact?}','update')->name('contacts.update');
 
-    Route::delete('/contact/{id?}','destroy')->name('contact.destroy');
+    Route::delete('/contacts/{contact?}','destroy')->name('contacts.destroy');
 
-    Route::delete('/contact/{id?}','destroy')->name('contact.destroy');
+    Route::delete('/contacts/{contact?}','destroy')->name('contacts.destroy');
 
-    Route::delete('/contact/{id?}/restore','restore')->name('contact.restore');
+    Route::delete('/contacts/{contact?}/restore','restore')->name('contacts.restore')
+        ->withTrashed();
 
-    Route::delete('/contact/{id?}/force-delete','forceDelete')->name('contact.force-delete');
+    Route::delete('/contacts/{contact?}/force-delete','forceDelete')->name('contacts.force-delete')
+        ->withTrashed();
 });
+
+Route::resources([
+    '/companies' => CompanyControllers::class ,
+    '/tags'      => TagControllers::class
+]);
+
+Route::resource('/activities',ActivityControllers::class)
+    ->parameters([
+        'activities' => 'active'
+    ]);
