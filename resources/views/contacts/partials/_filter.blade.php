@@ -1,10 +1,10 @@
                 <div class="row">
                   <div class="col-md-6">
                       <a
-                          href="{{ request()->fullUrlWithQuery(['trash' => false]) }}"
+                          href="{{ request()->fullUrlWithQuery(['trash' => false ]) }}"
                          class="btn {{ !request()->query('trash') && request()->query('trash') == 0 ? 'btn-success' :
                             'btn-secondary'}}">ALL</a> |
-                      <a href="{{ request()->fullUrlWithQuery(['trash' => true]) }}"
+                      <a href="{{ request()->fullUrlWithQuery(['trash' => true, 'page' => 1]) }}"
                          class="btn {{request()->query('trash') && request()->query('trash') == 1 ? 'btn-success' :
                             'btn-secondary'}}  ">Trash</a>
                   </div>

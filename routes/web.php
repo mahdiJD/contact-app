@@ -1,8 +1,11 @@
 <?php
 
 //use Barryvdh\Debugbar\Facades\Debugbar;
+use App\Http\Controllers\Settings\PasswordController;
 use Illuminate\Support\Facades\Route;
-//use App\Http\Controllers\PostController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CompanyControllers;
 use App\Http\Controllers\TagControllers;
@@ -62,14 +65,23 @@ use App\Http\Controllers\ActivityControllers;
 //    return '<h1> com list number: '. $id .' </h1>';
 //})->whereAlpha('id');
 //
-//Route::resource('/blog' , PostController::class);
+//Route::resource('/blog' , PostController::class)->name('blog','blog');
 //
 //Route::get('/home',\App\Http\Controllers\HomeController::class);
 
 
 Route::get('/', [ContactController::class,'welcome']);
 
-Route::controller(ContactController::class)->prefix('admin')->group(function () {
+
+Route::controller(ContactController::class)->middleware('auth')->prefix('admin')->group(function () {
+    Route::get('/admin/profile-information', ProfileController::class)
+        ->name('user-profile-information.edit');
+
+    Route::get('/admin/password', PasswordController::class)
+        ->name('user-password.edit');
+
+    Route::get('/dashboard', DashboardController::class);
+
     Route::get('/contacts','index')->name('contacts.index');
 
     Route::get('/contacts/create', 'create')->name('contacts.create');
@@ -85,8 +97,6 @@ Route::controller(ContactController::class)->prefix('admin')->group(function () 
 
     Route::delete('/contacts/{contact?}','destroy')->name('contacts.destroy');
 
-    Route::delete('/contacts/{contact?}','destroy')->name('contacts.destroy');
-
     Route::delete('/contacts/{contact?}/restore','restore')->name('contacts.restore')
         ->withTrashed();
 
@@ -94,12 +104,16 @@ Route::controller(ContactController::class)->prefix('admin')->group(function () 
         ->withTrashed();
 });
 
-Route::resources([
-    '/companies' => CompanyControllers::class ,
-    '/tags'      => TagControllers::class
-]);
+Route::middleware(['auth'])->group(function (){
 
-Route::resource('/activities',ActivityControllers::class)
-    ->parameters([
-        'activities' => 'active'
+    Route::resources([
+        '/companies' => CompanyControllers::class ,
+        '/tags'      => TagControllers::class
     ]);
+
+    Route::resource('/activities',ActivityControllers::class)
+        ->parameters([
+            'activities' => 'active'
+        ]);
+
+});

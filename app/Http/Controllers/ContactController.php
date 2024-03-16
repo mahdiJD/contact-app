@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Contact;
 use Illuminate\Pagination\LengthAwarePaginator;
 use \Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use function Laravel\Prompts\search;
 
@@ -31,6 +32,7 @@ class ContactController extends Controller
 
     public function index() {
 //        $contacts = $this->getContact();
+
         $companies = $this->companies->pluck();
 //        $this->perPage = request()->query('perPage');
 
@@ -45,6 +47,7 @@ class ContactController extends Controller
 //        }
 
 //        $contacts = $query->latest()
+
         $contacts = Contact::allowedTrash()
             ->allowedSorts(['first_name','last_name','email'] , '-id')
 //            ->allowedSorts('first_name')
@@ -53,7 +56,7 @@ class ContactController extends Controller
             ->allowedSearch('first_name','last_name','email')
             ->paginate($this->perPage);
 
-        dump(DB::getQueryLog());
+//        dump(DB::getQueryLog());
 
 //        $contactsCollection = Contact::latest()->get();
 //        $perPage = 10;
@@ -95,23 +98,23 @@ class ContactController extends Controller
         return view('welcome');
     }
 
-    public function edit($id){
-        $contact = Contact::findOrFail($id);
+    public function edit(Contact $contact){
+//        $contact = Contact::findOrFail($id);
         $companies = $this->companies->pluck();
         return view('contacts.edit')->with('contact',$contact)->with('companies',$companies);
     }
-    public function update(ContactRequest $request , $id): RedirectResponse
+    public function update(ContactRequest $request , Contact $contact): RedirectResponse
     {
-        $contact = Contact::findOrFail($id);
+//        $contact = Contact::findOrFail($id);
 
         $contact->update($request->all());
 
         return redirect()->route('contacts.index')->with('message','Contact has been updated successfully');
     }
 
-    public function destroy($id)
+    public function destroy(Contact $contact)
     {
-        $contact = Contact::findOrFail($id);
+//        $contact = Contact::findOrFail($id);
         $contact->delete();
         $redirect = request()->query('redirect');
         return ($redirect ? redirect()->route($redirect):back())
