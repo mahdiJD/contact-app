@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ContactRequest;
+use App\Models\Company;
 use App\Repositories\CompanyRepository;
 use Illuminate\Http\Request;
 use App\Models\Contact;
@@ -17,10 +18,11 @@ class ContactController extends Controller
 {
 
     public function __construct(
-        protected CompanyRepository $companies,
+//        protected CompanyRepository $companies,
         protected $perPage = 10,
-    ){
-
+    ){}
+    protected function userCompanies(){
+        return Company::forUser(auth()->user())->orderBy('name')->pluck('name','id');
     }
 //    protected function getContact(){
 //        return [
@@ -33,7 +35,8 @@ class ContactController extends Controller
     public function index() {
 //        $contacts = $this->getContact();
 
-        $companies = $this->companies->pluck();
+//        $companies = $this->companies->pluck();
+        $companies = $this->userCompanies();
 //        $this->perPage = request()->query('perPage');
 
 
@@ -48,12 +51,15 @@ class ContactController extends Controller
 
 //        $contacts = $query->latest()
 
-        $contacts = Contact::allowedTrash()
+        // auth()->user()->contacts()->
+        $contacts = Contact::
+            allowedTrash()
             ->allowedSorts(['first_name','last_name','email'] , '-id')
 //            ->allowedSorts('first_name')
 //            ->filterByCompany('company_id')
             ->allowedFilter('company_id')
             ->allowedSearch('first_name','last_name','email')
+            ->forUser(auth()->user())
             ->paginate($this->perPage);
 
 //        dump(DB::getQueryLog());
@@ -74,7 +80,8 @@ class ContactController extends Controller
     }
 
     public function store(ContactRequest $request){
-        Contact::create($request->all());
+//        Contact::create($request->all());
+        $contact = request()->user()->contacts()->create($request->all());
 
 //        dd($request->all());
         return redirect()->route('contacts.index')->with('message','Contact has been created successfully');
@@ -89,7 +96,7 @@ class ContactController extends Controller
     }
 
     public  function create () {
-        $companies =$this->companies->pluck();
+        $companies =$this->userCompanies();
         $contact = new Contact();
         return view('contacts.create')->with('contact',$contact)->with('companies',$companies);
     }
@@ -100,7 +107,7 @@ class ContactController extends Controller
 
     public function edit(Contact $contact){
 //        $contact = Contact::findOrFail($id);
-        $companies = $this->companies->pluck();
+        $companies = $this->userCompanies();
         return view('contacts.edit')->with('contact',$contact)->with('companies',$companies);
     }
     public function update(ContactRequest $request , Contact $contact): RedirectResponse
