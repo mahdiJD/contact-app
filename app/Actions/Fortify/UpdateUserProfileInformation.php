@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
@@ -27,8 +28,14 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
                 'max:255',
                 Rule::unique('users')->ignore($user->id),
             ],
-        ])->validateWithBag('updateProfileInformation');
+            'phone' => ['nullable', 'string', 'max:191'],
+            'company' => ['nullable', 'string', 'max:191'],
+            'country' => ['nullable', 'string', 'max:191'],
+            'address' => ['nullable', 'string', 'max:191'],
+            'profile_picture' => ['nullable', 'image'],
+        ])->validate();
 
+        $this->uploadProfilePicture($input);
         if ($input['email'] !== $user->email &&
             $user instanceof MustVerifyEmail) {
             $this->updateVerifiedUser($user, $input);
@@ -36,7 +43,30 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             $user->forceFill([
                 'name' => $input['name'],
                 'email' => $input['email'],
+                'phone' => $input['phone'],
+                'company' => $input['company'],
+                'country' => $input['country'],
+                'address' => $input['address'],
+                'profile_picture' => $input['profile_picture']
             ])->save();
+        }
+    }
+
+    protected function uploadProfilePicture(&$input) : void
+    {
+        if (request()->hasFile('profile_picture')){
+//            $fileName = Storage::putFile('profile', $input['profile_picture']);
+//            $input['profile-picture'] = $fileName;
+
+//            $input['profile_picture'] = $input['profile_picture']->store('profile');
+            $uploadedFile =$input['profile_picture'];
+            $fileName = $uploadedFile->storeAs('profile',
+                'profile-user-'.
+                request()->user()->id
+                .'.'.
+                $uploadedFile->getClientOriginalExtension()
+            );
+            $input['profile_picture'] = $fileName;
         }
     }
 
@@ -51,6 +81,11 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'name' => $input['name'],
             'email' => $input['email'],
             'email_verified_at' => null,
+            'phone' => $input['phone'],
+            'company' => $input['company'],
+            'country' => $input['country'],
+            'address' => $input['address'],
+            'profile_picture' => $input['profile_picture']
         ])->save();
 
         $user->sendEmailVerificationNotification();
