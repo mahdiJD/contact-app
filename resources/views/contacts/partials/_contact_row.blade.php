@@ -4,7 +4,11 @@
     <td>{{ $contact->first_name }} </td>
     <td>{{ $contact->last_name }}</td>
     <td>{{ $contact->email }}</td>
-    <td>{{ $contact->company->name }}</td>
+    <td>@if( $contact->company)
+            {{$contact->company->name}}
+        @else
+            {{$contact->company->allowedTrash()->name }}
+    @endif</td>
     <td width="150">
 
         @if($showTrashButton)

@@ -4,14 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ContactRequest;
 use App\Models\Company;
-use App\Repositories\CompanyRepository;
-use Illuminate\Http\Request;
 use App\Models\Contact;
-use Illuminate\Pagination\LengthAwarePaginator;
-use \Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
-use function Laravel\Prompts\search;
+use Illuminate\Database\Eloquent\Builder;
 
 
 class ContactController extends Controller
@@ -52,17 +48,19 @@ class ContactController extends Controller
 //        $contacts = $query->latest()
 
         // auth()->user()->contacts()->
+        DB::enableQueryLog();
         $contacts = Contact::
             allowedTrash()
             ->allowedSorts(['first_name','last_name','email'] , '-id')
 //            ->allowedSorts('first_name')
 //            ->filterByCompany('company_id')
+//            ->findMany('company_id')
             ->allowedFilter('company_id')
             ->allowedSearch('first_name','last_name','email')
             ->forUser(auth()->user())
             ->paginate($this->perPage);
 
-//        dump(DB::getQueryLog());
+        dump(DB::getQueryLog());
 
 //        $contactsCollection = Contact::latest()->get();
 //        $perPage = 10;

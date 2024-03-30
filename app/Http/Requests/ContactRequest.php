@@ -38,6 +38,7 @@ class ContactRequest extends FormRequest
                 break;
 
         }
+        $this->dd($rules);
         return $rules;
     }
 
@@ -49,7 +50,7 @@ class ContactRequest extends FormRequest
         ];
     }
 
-    protected function prepareForValidation()
+    protected function prepareForValidation(): void
     {
         $this->merge([
             'last_name' => $this->first_name && !$this->last_name ? $this->string('first_name')

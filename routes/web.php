@@ -10,6 +10,8 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CompanyControllers;
 use App\Http\Controllers\TagControllers;
 use App\Http\Controllers\ActivityControllers;
+use App\Http\Controllers\CompanyController;
+use App\Models\Company;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,14 +75,14 @@ use App\Http\Controllers\ActivityControllers;
 Route::get('/', [ContactController::class,'welcome']);
 
 
-Route::controller(ContactController::class)->middleware('auth')->prefix('admin')->group(function () {
-    Route::get('/admin/profile-information', ProfileController::class)
+Route::controller(ContactController::class)->middleware(['auth','verified'])->prefix('admin')->group(function () {
+    Route::get('/profile-information', ProfileController::class)
         ->name('user-profile-information.edit');
 
-    Route::get('/admin/password', PasswordController::class)
+    Route::get('/password', PasswordController::class)
         ->name('user-password.edit');
 
-    Route::get('/dashboard', DashboardController::class);
+    Route::get('/dashboard', DashboardController::class)->name('home.dashboard');
 
     Route::get('/contacts','index')->name('contacts.index');
 
@@ -100,20 +102,36 @@ Route::controller(ContactController::class)->middleware('auth')->prefix('admin')
     Route::delete('/contacts/{contact?}/restore','restore')->name('contacts.restore')
         ->withTrashed();
 
-    Route::delete('/contacts/{contact?}/force-delete','forceDelete')->name('contacts.force-delete')
+    Route::delete('/contacts/{contact?}/force-delete','forceDelete')
+        ->name('contacts.force-delete')
+        ->withTrashed();
+
+    Route::resources([
+        '/companies' => CompanyController::class ,
+        '/tags'      => TagControllers::class
+    ]);
+    Route::delete('/companies/{company}/restore',
+        [CompanyController::class , 'restore'])
+        ->whereNumber('company')
+        ->name('companies.restore')
+        ->withTrashed();
+    Route::delete('/companies/{company}/force-delete',
+        [CompanyController::class , 'forceDelete'])
+        ->whereNumber('company')
+        ->name('companies.force-delete')
         ->withTrashed();
 });
 
-Route::middleware(['auth'])->group(function (){
+// Route::middleware(['auth'])->group(function (){
 
-    Route::resources([
-        '/companies' => CompanyControllers::class ,
-        '/tags'      => TagControllers::class
-    ]);
+//     Route::resources([
+//         '/companies' => CompanyControllers::class ,
+//         '/tags'      => TagControllers::class
+//     ]);
 
-    Route::resource('/activities',ActivityControllers::class)
-        ->parameters([
-            'activities' => 'active'
-        ]);
+//     Route::resource('/activities',ActivityControllers::class)
+//         ->parameters([
+//             'activities' => 'active'
+//         ]);
 
-});
+// });

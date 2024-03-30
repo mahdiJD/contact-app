@@ -56,9 +56,9 @@
                         $showTrashButton = request()->query('trash') ? true : false;
                     @endphp
                    @forelse($contacts as $index => $contact)
-
+{{--                        @if($contact->company->name !== null)--}}
                         @include('contacts.partials._contact_row', ['contact'=> $contact, 'index' => $index])
-
+{{--                        @endif--}}
                     @empty
                         @include('contacts.partials._empty_contact')
                     @endforelse

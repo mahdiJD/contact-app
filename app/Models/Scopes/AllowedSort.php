@@ -13,6 +13,7 @@ trait AllowedSort{
     public function parseSortColumn($column = null){
         return ltrim($column ?? request()->query('sort_by'),"-");
     }
+    
     public function scopeAllowedSorts(Builder $query , array $columns , $defaultColumn = null)
     {   $column = $this->parseSortColumn();
         if (in_array($column,$columns)){
